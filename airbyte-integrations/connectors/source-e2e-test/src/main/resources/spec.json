@@ -9,11 +9,12 @@
     "properties": {
       "seed": {
         "title": "Random Object Generator Seed",
-        "description": "When the seed is unspecified, the current time millis will be used as the seed. Range: [-9e12, 9e12]",
+        "description": "When the seed is unspecified, the current time millis will be used as the seed. Range: [0, 1000000]",
         "type": "integer",
+        "default": 0,
         "examples": [42],
-        "min": -9000000000000,
-        "max": 9000000000000
+        "min": 0,
+        "max": 1000000
       },
       "mock_catalog": {
         "title": "Mock Catalog",
@@ -91,11 +92,11 @@
               },
               "max_records": {
                 "title": "Max Records",
-                "description": "Number of records to emit. Min 1. Max 1 billion.",
+                "description": "Number of records to emit. Min 1. Max 100 billion.",
                 "type": "integer",
                 "default": 100,
                 "min": 1,
-                "max": 1000000000
+                "max": 100000000000
               },
               "message_interval": {
                 "title": "Message Interval (ms)",

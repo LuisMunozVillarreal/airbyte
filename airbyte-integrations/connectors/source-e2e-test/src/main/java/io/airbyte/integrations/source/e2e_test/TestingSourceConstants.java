@@ -7,9 +7,11 @@ import io.airbyte.protocol.models.JsonSchemaPrimitive;
 
 public class TestingSourceConstants {
 
+  public static final String DEFAULT_STREAM = "data";
+  public static final String DEFAULT_COLUMN = "column1";
   public static final AirbyteCatalog DEFAULT_CATALOG = CatalogHelpers.createAirbyteCatalog(
-      "data",
-      Field.of("column1", JsonSchemaPrimitive.STRING));
+      DEFAULT_STREAM,
+      Field.of(DEFAULT_COLUMN, JsonSchemaPrimitive.STRING));
 
   public enum MockBehaviorType {
     CONTINUOUS_FEED,

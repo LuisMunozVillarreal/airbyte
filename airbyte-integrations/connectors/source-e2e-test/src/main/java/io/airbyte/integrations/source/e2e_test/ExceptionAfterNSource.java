@@ -19,10 +19,7 @@ import io.airbyte.protocol.models.AirbyteMessage;
 import io.airbyte.protocol.models.AirbyteMessage.Type;
 import io.airbyte.protocol.models.AirbyteRecordMessage;
 import io.airbyte.protocol.models.AirbyteStateMessage;
-import io.airbyte.protocol.models.CatalogHelpers;
 import io.airbyte.protocol.models.ConfiguredAirbyteCatalog;
-import io.airbyte.protocol.models.Field;
-import io.airbyte.protocol.models.JsonSchemaPrimitive;
 import io.airbyte.protocol.models.SyncMode;
 import java.time.Instant;
 import java.util.List;
@@ -39,11 +36,7 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionAfterNSource.class);
 
-  private static final String STREAM_NAME = "data";
-  private static final String COLUMN_NAME = "column1";
-  static final AirbyteCatalog CATALOG = CatalogHelpers.createAirbyteCatalog(
-      STREAM_NAME,
-      Field.of(COLUMN_NAME, JsonSchemaPrimitive.STRING));
+  static final AirbyteCatalog CATALOG = Jsons.clone(TestingSourceConstants.DEFAULT_CATALOG);
   static {
     CATALOG.getStreams().get(0).setSupportedSyncModes(List.of(SyncMode.FULL_REFRESH, SyncMode.INCREMENTAL));
     CATALOG.getStreams().get(0).setSourceDefinedCursor(true);
@@ -65,9 +58,9 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
 
     final AtomicLong recordsEmitted = new AtomicLong();
     final AtomicLong recordValue;
-    if (state != null && state.has(COLUMN_NAME)) {
+    if (state != null && state.has(TestingSourceConstants.DEFAULT_COLUMN)) {
       LOGGER.info("Found state: {}", state);
-      recordValue = new AtomicLong(state.get(COLUMN_NAME).asLong());
+      recordValue = new AtomicLong(state.get(TestingSourceConstants.DEFAULT_COLUMN).asLong());
     } else {
       LOGGER.info("No state found.");
       recordValue = new AtomicLong();
@@ -85,7 +78,7 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
           hasEmittedStateAtCount.set(true);
           return new AirbyteMessage()
               .withType(Type.STATE)
-              .withState(new AirbyteStateMessage().withData(Jsons.jsonNode(ImmutableMap.of(COLUMN_NAME, recordValue.get()))));
+              .withState(new AirbyteStateMessage().withData(Jsons.jsonNode(ImmutableMap.of(TestingSourceConstants.DEFAULT_COLUMN, recordValue.get()))));
         } else if (throwAfterNRecords > recordsEmitted.get()) {
           recordsEmitted.incrementAndGet();
           recordValue.incrementAndGet();
@@ -97,9 +90,9 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
           return new AirbyteMessage()
               .withType(Type.RECORD)
               .withRecord(new AirbyteRecordMessage()
-                  .withStream(STREAM_NAME)
+                  .withStream(TestingSourceConstants.DEFAULT_STREAM)
                   .withEmittedAt(Instant.now().toEpochMilli())
-                  .withData(Jsons.jsonNode(ImmutableMap.of(COLUMN_NAME, recordValue.get()))));
+                  .withData(Jsons.jsonNode(ImmutableMap.of(TestingSourceConstants.DEFAULT_COLUMN, recordValue.get()))));
         } else {
           throw new IllegalStateException("Scheduled exceptional event.");
         }
