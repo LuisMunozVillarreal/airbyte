@@ -7,6 +7,14 @@
     "required": ["mock_catalog", "mock_type"],
     "additionalProperties": false,
     "properties": {
+      "seed": {
+        "title": "Random Object Generator Seed",
+        "description": "When the seed is unspecified, the current time millis will be used as the seed. Range: [-9e12, 9e12]",
+        "type": "integer",
+        "examples": [42],
+        "min": -9000000000000,
+        "max": 9000000000000
+      },
       "mock_catalog": {
         "title": "Mock Catalog",
         "type": "object",
@@ -67,8 +75,8 @@
           }
         ]
       },
-      "mock_type": {
-        "title": "Mock Type",
+      "mock_behavior": {
+        "title": "Mock Behavior",
         "type": "object",
         "oneOf": [
           {

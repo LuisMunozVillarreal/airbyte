@@ -31,9 +31,9 @@ import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InfiniteFeedSource extends BaseConnector implements Source {
+public class ContinuousFeedSource extends BaseConnector implements Source {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteFeedSource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ContinuousFeedSource.class);
 
   public static final AirbyteCatalog CATALOG = CatalogHelpers.createAirbyteCatalog(
       "data",
