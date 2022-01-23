@@ -109,11 +109,11 @@ public class ContinuousFeedConfig {
     }
   }
 
-  private long parseMaxMessages(final JsonNode config) {
+  static long parseMaxMessages(final JsonNode config) {
     return config.get("max_messages").asLong();
   }
 
-  private Optional<Long> parseMessageIntervalMs(final JsonNode config) {
+  static Optional<Long> parseMessageIntervalMs(final JsonNode config) {
     return Optional.ofNullable(config.get("message_interval_ms")).map(JsonNode::asLong);
   }
 

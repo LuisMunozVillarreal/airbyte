@@ -11,6 +11,7 @@ import io.airbyte.commons.resources.MoreResources;
 import io.airbyte.commons.util.MoreIterators;
 import io.airbyte.protocol.models.AirbyteCatalog;
 import io.airbyte.validation.json.JsonValidationException;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -31,9 +32,22 @@ class ContinuousFeedConfigTest {
 
   @Test
   public void testParseSeed() {
-    final long expectedSeed = RANDOM.nextLong();
-    final long actualSeed = ContinuousFeedConfig.parseSeed(Jsons.deserialize(String.format("{ \"seed\": %d }", expectedSeed)));
-    assertEquals(expectedSeed, actualSeed);
+    final long seed = RANDOM.nextLong();
+    assertEquals(seed, ContinuousFeedConfig.parseSeed(Jsons.deserialize(String.format("{ \"seed\": %d }", seed))));
+  }
+
+  @Test
+  public void testParseMaxMessages() {
+    final long maxMessages = RANDOM.nextLong();
+    assertEquals(maxMessages, ContinuousFeedConfig.parseMaxMessages(Jsons.deserialize(String.format("{ \"max_messages\": %d }", maxMessages))));
+  }
+
+  @Test
+  public void testParseMessageIntervalMs() {
+    assertEquals(Optional.empty(), ContinuousFeedConfig.parseMessageIntervalMs(Jsons.deserialize("{}")));
+
+    final long messageIntervalMs = RANDOM.nextLong();
+    assertEquals(Optional.of(messageIntervalMs), ContinuousFeedConfig.parseMessageIntervalMs(Jsons.deserialize(String.format("{ \"message_interval_ms\": %d }", messageIntervalMs))));
   }
 
   public static class ContinuousFeedConfigTestCaseProvider implements ArgumentsProvider {
