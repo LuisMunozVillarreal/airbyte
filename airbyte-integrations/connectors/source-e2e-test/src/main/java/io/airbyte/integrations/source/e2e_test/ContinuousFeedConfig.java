@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -131,6 +132,32 @@ public class ContinuousFeedConfig {
 
   public Optional<Long> getMessageIntervalMs() {
     return messageIntervalMs;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s{maxMessages=%d, seed=%d, messageIntervalMs=%s, mockCatalog=%s}",
+        ContinuousFeedConfig.class.getSimpleName(),
+        maxMessages,
+        seed,
+        messageIntervalMs.toString(),
+        mockCatalog.toString());
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    if (!(other instanceof final ContinuousFeedConfig that)) {
+      return false;
+    }
+    return this.maxMessages == that.maxMessages
+        && this.seed == that.seed
+        && this.messageIntervalMs.equals(that.messageIntervalMs)
+        && this.mockCatalog.equals(that.mockCatalog);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(seed, maxMessages, messageIntervalMs, mockCatalog);
   }
 
 }
