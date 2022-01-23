@@ -5686,7 +5686,7 @@
         - - "client_secret"
         oauthFlowOutputParameters:
         - - "refresh_token"
-- dockerImage: "airbyte/source-sendgrid:0.3.0"
+- dockerImage: "eu.gcr.io/traktion/airbyte-source-sendgrid:0.3.0"
   spec:
     documentationUrl: "https://docs.airbyte.io/integrations/sources/sendgrid"
     connectionSpecification:
