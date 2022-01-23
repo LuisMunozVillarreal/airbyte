@@ -7,7 +7,6 @@ import io.airbyte.commons.json.Jsons;
 import io.airbyte.commons.resources.MoreResources;
 import io.airbyte.commons.string.Strings;
 import io.airbyte.commons.util.MoreIterators;
-import io.airbyte.integrations.source.e2e_test.TestingSourceConstants.MockCatalogType;
 import io.airbyte.protocol.models.AirbyteCatalog;
 import io.airbyte.protocol.models.AirbyteStream;
 import io.airbyte.validation.json.JsonSchemaValidator;
@@ -34,6 +33,11 @@ public class ContinuousFeedConfig {
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public enum MockCatalogType {
+    SINGLE_STREAM,
+    MULTI_STREAM
   }
 
   private final long seed;

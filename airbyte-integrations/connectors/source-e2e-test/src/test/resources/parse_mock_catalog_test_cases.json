@@ -1,26 +1,5 @@
 [
   {
-    "testCase": "default catalog",
-    "mockCatalog": {
-      "type": "DEFAULT"
-    },
-    "expectedCatalog": {
-      "streams": [
-        {
-          "name": "data",
-          "json_schema": {
-            "type": "object",
-            "properties": {
-              "column1": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
     "testCase": "single stream",
     "mockCatalog": {
       "type": "SINGLE_STREAM",
