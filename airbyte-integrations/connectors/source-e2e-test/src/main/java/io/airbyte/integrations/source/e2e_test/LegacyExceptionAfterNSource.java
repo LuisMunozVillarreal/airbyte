@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
  * Throws an exception after it emits N record messages where N == throw_after_n_records. Ever 5th
  * message emitted is a state message. State messages do NOT count against N.
  */
-public class ExceptionAfterNSource extends BaseConnector implements Source {
+public class LegacyExceptionAfterNSource extends BaseConnector implements Source {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionAfterNSource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LegacyExceptionAfterNSource.class);
 
-  static final AirbyteCatalog CATALOG = Jsons.clone(TestingSourceConstants.DEFAULT_CATALOG);
+  static final AirbyteCatalog CATALOG = Jsons.clone(LegacyConstants.DEFAULT_CATALOG);
   static {
     CATALOG.getStreams().get(0).setSupportedSyncModes(List.of(SyncMode.FULL_REFRESH, SyncMode.INCREMENTAL));
     CATALOG.getStreams().get(0).setSourceDefinedCursor(true);
@@ -58,9 +58,9 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
 
     final AtomicLong recordsEmitted = new AtomicLong();
     final AtomicLong recordValue;
-    if (state != null && state.has(TestingSourceConstants.DEFAULT_COLUMN)) {
+    if (state != null && state.has(LegacyConstants.DEFAULT_COLUMN)) {
       LOGGER.info("Found state: {}", state);
-      recordValue = new AtomicLong(state.get(TestingSourceConstants.DEFAULT_COLUMN).asLong());
+      recordValue = new AtomicLong(state.get(LegacyConstants.DEFAULT_COLUMN).asLong());
     } else {
       LOGGER.info("No state found.");
       recordValue = new AtomicLong();
@@ -73,26 +73,26 @@ public class ExceptionAfterNSource extends BaseConnector implements Source {
       protected AirbyteMessage computeNext() {
         if (recordsEmitted.get() % 5 == 0 && !hasEmittedStateAtCount.get()) {
 
-          LOGGER.info("{}: emitting state record with value {}", ExceptionAfterNSource.class, recordValue.get());
+          LOGGER.info("{}: emitting state record with value {}", LegacyExceptionAfterNSource.class, recordValue.get());
 
           hasEmittedStateAtCount.set(true);
           return new AirbyteMessage()
               .withType(Type.STATE)
-              .withState(new AirbyteStateMessage().withData(Jsons.jsonNode(ImmutableMap.of(TestingSourceConstants.DEFAULT_COLUMN, recordValue.get()))));
+              .withState(new AirbyteStateMessage().withData(Jsons.jsonNode(ImmutableMap.of(LegacyConstants.DEFAULT_COLUMN, recordValue.get()))));
         } else if (throwAfterNRecords > recordsEmitted.get()) {
           recordsEmitted.incrementAndGet();
           recordValue.incrementAndGet();
           hasEmittedStateAtCount.set(false);
 
           LOGGER.info("{} ExceptionAfterNSource: emitting record with value {}. record {} in sync.",
-              ExceptionAfterNSource.class, recordValue.get(), recordsEmitted.get());
+              LegacyExceptionAfterNSource.class, recordValue.get(), recordsEmitted.get());
 
           return new AirbyteMessage()
               .withType(Type.RECORD)
               .withRecord(new AirbyteRecordMessage()
-                  .withStream(TestingSourceConstants.DEFAULT_STREAM)
+                  .withStream(LegacyConstants.DEFAULT_STREAM)
                   .withEmittedAt(Instant.now().toEpochMilli())
-                  .withData(Jsons.jsonNode(ImmutableMap.of(TestingSourceConstants.DEFAULT_COLUMN, recordValue.get()))));
+                  .withData(Jsons.jsonNode(ImmutableMap.of(LegacyConstants.DEFAULT_COLUMN, recordValue.get()))));
         } else {
           throw new IllegalStateException("Scheduled exceptional event.");
         }

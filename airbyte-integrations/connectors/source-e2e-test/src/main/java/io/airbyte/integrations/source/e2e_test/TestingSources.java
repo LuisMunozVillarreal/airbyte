@@ -10,7 +10,6 @@ import io.airbyte.commons.util.AutoCloseableIterator;
 import io.airbyte.integrations.BaseConnector;
 import io.airbyte.integrations.base.IntegrationRunner;
 import io.airbyte.integrations.base.Source;
-import io.airbyte.integrations.source.e2e_test.TestingSourceConstants.MockBehaviorType;
 import io.airbyte.protocol.models.AirbyteCatalog;
 import io.airbyte.protocol.models.AirbyteConnectionStatus;
 import io.airbyte.protocol.models.AirbyteMessage;
@@ -26,21 +25,29 @@ public class TestingSources extends BaseConnector implements Source {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestingSources.class);
 
-  private final Map<MockBehaviorType, Source> sourceMap;
+  private final Map<TestingSourceType, Source> sourceMap;
+
+  public enum TestingSourceType {
+    CONTINUOUS_FEED,
+    // the following are legacy types
+    EXCEPTION_AFTER_N,
+    INFINITE_FEED
+  }
 
   public TestingSources() {
-    this(ImmutableMap.<MockBehaviorType, Source>builder()
-        .put(MockBehaviorType.CONTINUOUS_FEED, new ContinuousFeedSource())
-        .put(MockBehaviorType.EXCEPTION_AFTER_N, new ExceptionAfterNSource())
+    this(ImmutableMap.<TestingSourceType, Source>builder()
+        .put(TestingSourceType.CONTINUOUS_FEED, new ContinuousFeedSource())
+        .put(TestingSourceType.EXCEPTION_AFTER_N, new LegacyExceptionAfterNSource())
+        .put(TestingSourceType.INFINITE_FEED, new LegacyInfiniteFeedSource())
         .build());
   }
 
-  public TestingSources(final Map<MockBehaviorType, Source> sourceMap) {
+  public TestingSources(final Map<TestingSourceType, Source> sourceMap) {
     this.sourceMap = sourceMap;
   }
 
   private Source selectSource(final JsonNode config) {
-    return sourceMap.get(MockBehaviorType.valueOf(config.get("type").asText()));
+    return sourceMap.get(TestingSourceType.valueOf(config.get("type").asText()));
   }
 
   @Override

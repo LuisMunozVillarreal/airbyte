@@ -7,7 +7,6 @@ import io.airbyte.commons.json.Jsons;
 import io.airbyte.commons.resources.MoreResources;
 import io.airbyte.commons.string.Strings;
 import io.airbyte.commons.util.MoreIterators;
-import io.airbyte.integrations.source.e2e_test.TestingSourceConstants.MockBehaviorType;
 import io.airbyte.integrations.source.e2e_test.TestingSourceConstants.MockCatalogType;
 import io.airbyte.protocol.models.AirbyteCatalog;
 import io.airbyte.protocol.models.AirbyteStream;
@@ -21,7 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class TestingSourceConfig {
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public class ContinuousFeedConfig {
 
   private static final JsonNode JSON_SCHEMA_DRAFT_07;
   private static final JsonSchemaValidator SCHEMA_VALIDATOR = new JsonSchemaValidator();
@@ -38,12 +38,14 @@ public class TestingSourceConfig {
 
   private final long seed;
   private final AirbyteCatalog mockCatalog;
-  private final MockBehaviorType mockBehaviorType;
+  private final long maxMessages;
+  private final Optional<Long> messageIntervalMs;
 
-  public TestingSourceConfig(final JsonNode config) throws JsonValidationException {
+  public ContinuousFeedConfig(final JsonNode config) throws JsonValidationException {
     this.seed = parseSeed(config);
     this.mockCatalog = parseMockCatalog(config);
-    this.mockBehaviorType = parseMockBehaviorType(config);
+    this.maxMessages = parseMaxMessages(config);
+    this.messageIntervalMs = parseMessageIntervalMs(config);
   }
 
   static long parseSeed(final JsonNode config) {
@@ -57,9 +59,6 @@ public class TestingSourceConfig {
     final JsonNode mockCatalogConfig = config.get("mock_catalog");
     final MockCatalogType mockCatalogType = MockCatalogType.valueOf(mockCatalogConfig.get("type").asText());
     switch (mockCatalogType) {
-      case DEFAULT -> {
-        return TestingSourceConstants.DEFAULT_CATALOG;
-      }
       case SINGLE_STREAM -> {
         final String streamName = mockCatalogConfig.get("stream_name").asText();
         final String streamSchemaText = mockCatalogConfig.get("stream_schema").asText();
@@ -106,8 +105,12 @@ public class TestingSourceConfig {
     }
   }
 
-  static MockBehaviorType parseMockBehaviorType(final JsonNode config) {
-    return MockBehaviorType.valueOf(config.get("mock_type").get("type").asText());
+  private long parseMaxMessages(final JsonNode config) {
+    return config.get("max_messages").asLong();
+  }
+
+  private Optional<Long> parseMessageIntervalMs(final JsonNode config) {
+    return Optional.ofNullable(config.get("message_interval_ms")).map(JsonNode::asLong);
   }
 
   public long getSeed() {
@@ -118,8 +121,12 @@ public class TestingSourceConfig {
     return mockCatalog;
   }
 
-  public MockBehaviorType getMockBehaviorType() {
-    return mockBehaviorType;
+  public long getMaxMessages() {
+    return maxMessages;
+  }
+
+  public Optional<Long> getMessageIntervalMs() {
+    return messageIntervalMs;
   }
 
 }

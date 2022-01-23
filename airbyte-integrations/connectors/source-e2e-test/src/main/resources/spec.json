@@ -8,7 +8,7 @@
     "oneOf": [
       {
         "title": "Continuous Feed",
-        "required": ["type", "max_records"],
+        "required": ["type", "max_messages", "mock_catalog"],
         "description": "A mock mode that will emit random messages based on the input schema.",
         "additionalProperties": false,
         "properties": {
@@ -18,7 +18,7 @@
             "default": "CONTINUOUS_FEED",
             "order": 10
           },
-          "max_records": {
+          "max_messages": {
             "title": "Max Records",
             "description": "Number of records to emit. Min 1. Max 100 billion.",
             "type": "integer",
@@ -37,11 +37,12 @@
             "max": 1000000,
             "order": 30
           },
-          "message_interval": {
+          "message_interval_ms": {
             "title": "Message Interval (ms)",
-            "description": "Interval between messages in ms. Min 0 ms.",
+            "description": "Interval between messages in ms. Min 0 ms. Max 60000 ms (1 minute).",
             "type": "integer",
             "min": 0,
+            "max": 60000,
             "default": 0,
             "order": 40
           },
@@ -99,7 +100,7 @@
       {
         "title": "Legacy Exception After N",
         "required": ["type", "throw_after_n_records"],
-        "description": "A legacy mode from v0.1.1. The catalog has one \"data\" stream, which has one string field \"column1\". This mode will throw an exception after N messages.",
+        "description": "A legacy mode from v0.1.1 mainly for unit tests. The catalog has one \"data\" stream, which has one string field \"column1\". This mode will throw an exception after N messages.",
         "additionalProperties": false,
         "properties": {
           "type": {
@@ -118,7 +119,7 @@
       {
         "title": "Legacy Infinite Feed",
         "required": ["type", "max_records"],
-        "description": "A legacy mode from v0.1.1. The catalog has one \"data\" stream, which has one string field \"column1\". This mode will emit messages infinitely.",
+        "description": "A legacy mode from v0.1.1 mainly for unit tests. The catalog has one \"data\" stream, which has one string field \"column1\". This mode will emit messages infinitely.",
         "additionalProperties": true,
         "properties": {
           "type": {

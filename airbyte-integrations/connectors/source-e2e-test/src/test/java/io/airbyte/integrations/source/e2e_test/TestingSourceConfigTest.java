@@ -32,7 +32,7 @@ class TestingSourceConfigTest {
   @Test
   public void testParseSeed() {
     final long expectedSeed = RANDOM.nextLong();
-    final long actualSeed = TestingSourceConfig.parseSeed(Jsons.deserialize(String.format("{ \"seed\": %d }", expectedSeed)));
+    final long actualSeed = ContinuousFeedConfig.parseSeed(Jsons.deserialize(String.format("{ \"seed\": %d }", expectedSeed)));
     assertEquals(expectedSeed, actualSeed);
   }
 
@@ -44,14 +44,14 @@ class TestingSourceConfigTest {
                                    final AirbyteCatalog expectedCatalog) throws Exception {
     if (invalidSchema) {
       try {
-        TestingSourceConfig.parseMockCatalog(mockConfig);
+        ContinuousFeedConfig.parseMockCatalog(mockConfig);
         fail();
       } catch (final JsonValidationException e) {
         // expected
         LOGGER.info("Json validation message: {}", e.getMessage());
       }
     } else {
-      final AirbyteCatalog actualCatalog = TestingSourceConfig.parseMockCatalog(mockConfig);
+      final AirbyteCatalog actualCatalog = ContinuousFeedConfig.parseMockCatalog(mockConfig);
       assertEquals(expectedCatalog.getStreams(), actualCatalog.getStreams());
     }
   }
